@@ -6,9 +6,10 @@ name = "Your Name"
 email = "you@example.com"
 phone = "+358 XX XXXXXXX"
 location = "City, Finland. Open to remote."
+summary = "Optional one or two sentence professional summary shown at the top of the CV."
 
 [languages]
-list = "Finnish (native), English (fluent)"
+list = ["Finnish (native)", "English (fluent)"]
 
 [[education]]
 entry = "Degree, School, Year–Year"
@@ -46,6 +47,11 @@ location_preference = "Finland-based or remote"
 
 # Optional: override what the cover letter leads with and which skills to highlight.
 # Defaults to recent_role title+company and the first 5 current skills if omitted.
+hobbies = [
+  "Game development — describe your game projects",
+  "Another hobby",
+]
+
 [search]
 queries = [
   "your job title",
@@ -74,3 +80,7 @@ finland = ["helsinki", "espoo", "tampere", "turku", "oulu", "jyväskylä", "vant
 location_points = 10
 remote_keywords = ["remote", "etä"]
 remote_points = 5
+
+[attribution]
+enabled = true
+repo = "https://github.com/YOUR_USERNAME/jobbot"
