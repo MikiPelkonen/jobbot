@@ -49,3 +49,22 @@ location_preference = "Finland-based or remote"
 [emphasis]
 lead_with = "Your most relevant role or achievement to lead with"
 highlight_skills = ["Skill A", "Skill B", "Skill C"]
+
+# --- Scoring ---
+# Title keyword weights — higher = more relevant to you.
+# Checked against job title (case-insensitive).
+[scoring.title]
+"your job title keyword" = 30
+"another title keyword" = 25
+
+# Description/tags keyword weights.
+[scoring.description]
+"skill keyword" = 15
+"another skill" = 10
+
+# Location bonuses.
+[scoring.location]
+finland = ["helsinki", "espoo", "tampere", "turku", "oulu", "jyväskylä", "vantaa", "suomi", "finland"]
+location_points = 10
+remote_keywords = ["remote", "etä"]
+remote_points = 5
