@@ -3,19 +3,20 @@ import { writeFileSync, mkdirSync } from "fs";
 import { scrapeDuunitori } from "./scrape";
 import { scoreJobs } from "./score";
 import { generateCoverLetter } from "./generate";
+import { loadProfile } from "./profile";
 import type { Job } from "./types";
 
 const args = process.argv.slice(2);
+const cliQuery = args.find((a) => !a.startsWith("--"));
+
+const profile = await loadProfile();
 
 const ARGS = {
-  queries: (args.find((a) => !a.startsWith("--")) ?? "it support")
-    .split(",")
-    .map((q) => q.trim())
-    .filter(Boolean),
+  queries: cliQuery
+    ? cliQuery.split(",").map((q) => q.trim()).filter(Boolean)
+    : profile.search.queries,
   top: Number(args.find((a) => a.startsWith("--top="))?.split("=")[1] ?? 5),
-  minScore: Number(
-    args.find((a) => a.startsWith("--min-score="))?.split("=")[1] ?? 10,
-  ),
+  minScore: Number(args.find((a) => a.startsWith("--min-score="))?.split("=")[1] ?? 10),
 } as const;
 
 const OUT_DIR = "data/apply";

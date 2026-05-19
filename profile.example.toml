@@ -46,6 +46,12 @@ location_preference = "Finland-based or remote"
 
 # Optional: override what the cover letter leads with and which skills to highlight.
 # Defaults to recent_role title+company and the first 5 current skills if omitted.
+[search]
+queries = [
+  "your job title",
+  "another search term",
+]
+
 [emphasis]
 lead_with = "Your most relevant role or achievement to lead with"
 highlight_skills = ["Skill A", "Skill B", "Skill C"]

@@ -2,15 +2,18 @@ import chalk from "chalk";
 import { writeFileSync, mkdirSync } from "fs";
 import { scrapeDuunitori, scrapeJobDetails } from "./scrape";
 import { scoreJobs } from "./score";
+import { loadProfile } from "./profile";
 import type { Job } from "./types";
 
 const args = process.argv.slice(2);
+const cliQuery = args.find((a) => !a.startsWith("--"));
+
+const profile = await loadProfile();
 
 const ARGS = {
-  queries: (args.find((a) => !a.startsWith("--")) ?? "it support")
-    .split(",")
-    .map((q) => q.trim())
-    .filter(Boolean),
+  queries: cliQuery
+    ? cliQuery.split(",").map((q) => q.trim()).filter(Boolean)
+    : profile.search.queries,
   withDetails: args.includes("--details"),
   save: !args.includes("--no-save"),
   limit: Number(args.find((a) => a.startsWith("--limit="))?.split("=")[1] ?? 0),

@@ -15,6 +15,7 @@ export interface Profile {
   skills: { current: string[]; some_experience: string[] };
   target: { roles: string[]; location_preference: string };
   emphasis?: { lead_with?: string; highlight_skills?: string[] };
+  search: { queries: string[] };
   scoring: {
     title: Record<string, number>;
     description: Record<string, number>;
