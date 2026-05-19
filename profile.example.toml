@@ -1,0 +1,51 @@
+# Copy this file to profile.toml and fill in your details.
+# profile.toml is gitignored — your personal info stays local.
+
+[personal]
+name = "Your Name"
+email = "you@example.com"
+phone = "+358 XX XXXXXXX"
+location = "City, Finland. Open to remote."
+
+[languages]
+list = "Finnish (native), English (fluent)"
+
+[[education]]
+entry = "Degree, School, Year–Year"
+
+[[education]]
+entry = "Another Degree, School, Year–present"
+
+[recent_role]
+title = "Your Job Title"
+company = "Company Name"
+period = "Month Year – Month Year"
+end_reason = "Reason role ended (e.g. contract end, layoff, resignation)"
+duties = [
+  "Key responsibility one",
+  "Key responsibility two",
+  "Key responsibility three",
+]
+
+[[previous_experience]]
+entry = "Role, Company (Years): brief description"
+
+[[previous_experience]]
+entry = "Role, Company (Years): brief description"
+
+[skills]
+current = ["Skill A", "Skill B", "Skill C"]
+some_experience = ["Skill D", "Skill E"]
+
+[target]
+roles = [
+  "Role type 1",
+  "Role type 2",
+]
+location_preference = "Finland-based or remote"
+
+# Optional: override what the cover letter leads with and which skills to highlight.
+# Defaults to recent_role title+company and the first 5 current skills if omitted.
+[emphasis]
+lead_with = "Your most relevant role or achievement to lead with"
+highlight_skills = ["Skill A", "Skill B", "Skill C"]
