@@ -106,7 +106,7 @@ if (ARGS.withDetails) {
   jobs = enriched;
 }
 
-jobs = scoreJobs(jobs);
+jobs = await scoreJobs(jobs);
 
 if (ARGS.save) saveJobs(jobs);
 printJobs(jobs);

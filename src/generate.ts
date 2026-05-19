@@ -1,25 +1,5 @@
-import { parse } from "smol-toml";
+import { loadProfile, type Profile } from "./profile";
 import type { Job } from "./types";
-
-interface Profile {
-  personal: { name: string; email: string; phone: string; location: string };
-  languages: { list: string };
-  education: { entry: string }[];
-  recent_role: { title: string; company: string; period: string; end_reason: string; duties: string[] };
-  previous_experience: { entry: string }[];
-  skills: { current: string[]; some_experience: string[] };
-  target: { roles: string[]; location_preference: string };
-  emphasis?: { lead_with?: string; highlight_skills?: string[] };
-}
-
-async function loadProfile(): Promise<Profile> {
-  const file = Bun.file("profile.toml");
-  if (!file.size) {
-    console.error("profile.toml not found. Copy profile.example.toml to profile.toml and fill in your details.");
-    process.exit(1);
-  }
-  return parse(await file.text()) as unknown as Profile;
-}
 
 function buildProfileText(p: Profile): string {
   return `

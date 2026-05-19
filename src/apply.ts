@@ -49,7 +49,7 @@ for (const query of ARGS.queries) {
 }
 
 // Score + filter + take top N
-jobs = scoreJobs(jobs).filter((j) => (j.score ?? 0) >= ARGS.minScore).slice(0, ARGS.top);
+jobs = (await scoreJobs(jobs)).filter((j) => (j.score ?? 0) >= ARGS.minScore).slice(0, ARGS.top);
 
 if (!jobs.length) {
   console.log(chalk.red("No jobs met the minimum score threshold."));
