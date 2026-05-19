@@ -117,4 +117,7 @@ dist
 # scraped local data
 data/
 
+# personal profile — copy profile.example.toml to profile.toml and fill in your details
+profile.toml
+
 CLAUDE.md
