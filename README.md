@@ -72,7 +72,8 @@ The app reads every file in that folder and passes the content to Claude as supp
 Scrapes, scores, and saves results to `data/jobs.json`.
 
 ```bash
-bun run src/index.ts "it support,unity developer,qa"
+bun run scrape "it support,unity developer,qa"
+bun run scrape:details "it support,unity developer,qa"   # includes full descriptions
 ```
 
 Options:
@@ -88,7 +89,9 @@ Options:
 Scrapes, scores, takes the top N jobs, and generates a cover letter for each using Claude.
 
 ```bash
-bun run src/apply.ts "it support,unity developer,qa"
+bun run apply "it support,unity developer,qa"
+bun run apply:4 "it support,unity developer,qa"         # top 4 (TE-palvelut requirement)
+bun run apply:top10 "it support,unity developer,qa"     # top 10, lower score threshold
 ```
 
 Options:
