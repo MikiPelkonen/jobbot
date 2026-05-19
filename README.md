@@ -13,6 +13,7 @@ Built for Finnish job markets (Duunitori), but the scoring and generation are fu
 - Generates tailored cover letter emails via the local `claude` CLI (no API key needed)
 - Saves letters to `data/apply/` and prints them copy-paste ready in the terminal
 - All personal info and scoring config lives in a gitignored `profile.toml`
+- Drop your CV and employment documents into `resumes/` — the app reads them automatically to enrich generated letters
 
 ---
 
@@ -20,6 +21,7 @@ Built for Finnish job markets (Duunitori), but the scoring and generation are fu
 
 - [Bun](https://bun.sh) v1.0+
 - [Claude Code](https://claude.ai/code) CLI installed and authenticated (`claude` must be in PATH)
+- `pdftotext` for PDF resume support — install via `poppler-utils` (Linux) or `poppler` (macOS via Homebrew)
 
 > **Node.js:** The project uses Bun-specific APIs (`Bun.file`, `Bun.spawn`). It does not run on Node without modifications.
 
@@ -39,14 +41,27 @@ cp profile.example.toml profile.toml
 
 Then open `profile.toml` and fill in your details. It has four sections:
 
-| Section                              | What it controls                                           |
-| ------------------------------------ | ---------------------------------------------------------- |
-| `[personal]`                         | Your name, email, phone, location                          |
-| `[education]`, `[recent_role]`, etc. | Your CV — used to generate cover letters                   |
-| `[emphasis]`                         | What the letter leads with and which skills to highlight   |
-| `[scoring]`                          | Keyword weights that rank job listings by relevance to you |
+| Section | What it controls |
+|---|---|
+| `[personal]` | Your name, email, phone, location |
+| `[education]`, `[recent_role]`, etc. | Your CV — used to generate cover letters |
+| `[emphasis]` | What the letter leads with and which skills to highlight |
+| `[scoring]` | Keyword weights that rank job listings by relevance to you |
 
 `profile.toml` is gitignored — your personal info never gets committed.
+
+### Resume documents (optional)
+
+Drop CV files, certificates of employment, or reference letters into the `resumes/` folder. Supported formats: `.txt`, `.md`, `.pdf`
+
+```
+resumes/
+  my-cv.pdf
+  lightneer-certificate.pdf
+  old-cv.txt
+```
+
+The app reads every file in that folder and passes the content to Claude as supplementary context when generating letters. The more detail you provide, the more specific the output. The `resumes/` folder is gitignored — files you add there are never pushed.
 
 ---
 
@@ -117,6 +132,7 @@ src/
   score.ts        # Job scoring logic
   generate.ts     # Cover letter generation via claude CLI
   profile.ts      # Shared profile loader
+  resumes.ts      # Resume document reader (.txt, .md, .pdf)
   scrape/
     duunitori.ts  # Duunitori scraper
     jobDetails.ts # Job detail page scraper
@@ -124,6 +140,7 @@ src/
 
 profile.toml          # Your profile (gitignored)
 profile.example.toml  # Template to copy
+resumes/              # Your CV documents (gitignored, except example.md)
 data/                 # Scraped results and generated letters (gitignored)
 ```
 
@@ -131,6 +148,10 @@ data/                 # Scraped results and generated letters (gitignored)
 
 ## How cover letter generation works
 
-`apply.ts` calls `claude -p "<prompt>"` as a subprocess for each job. The prompt includes your full profile from `profile.toml` and the job details. No API key is required — it uses your active Claude Code session.
+`apply.ts` calls `claude -p "<prompt>"` as a subprocess for each job. The prompt includes:
 
-Letters match the language of the job posting (Finnish or English).
+1. Your structured profile from `profile.toml`
+2. Any documents found in `resumes/` as supplementary context
+3. The job title, company, location and description
+
+No API key is required — it uses your active Claude Code session. Letters match the language of the job posting (Finnish or English).
