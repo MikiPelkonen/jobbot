@@ -33,9 +33,11 @@ ${p.target.roles.map((r) => `- ${r}`).join("\n")}
 }
 
 function buildPrompt(job: Job, p: Profile, profileText: string): string {
-  const leadWith = p.emphasis?.lead_with
-    ?? `${p.recent_role.title} at ${p.recent_role.company} (${p.recent_role.period})`;
-  const highlightSkills = p.emphasis?.highlight_skills ?? p.skills.current.slice(0, 5);
+  const leadWith =
+    p.emphasis?.lead_with ??
+    `${p.recent_role.title} at ${p.recent_role.company} (${p.recent_role.period})`;
+  const highlightSkills =
+    p.emphasis?.highlight_skills ?? p.skills.current.slice(0, 5);
 
   return `
 You are helping write a short, professional cover letter email for a job application.
@@ -79,7 +81,8 @@ export async function generateCoverLetter(job: Job): Promise<string> {
   ]);
 
   const exitCode = await proc.exited;
-  if (exitCode !== 0) throw new Error(`claude exited ${exitCode}: ${err.trim()}`);
+  if (exitCode !== 0)
+    throw new Error(`claude exited ${exitCode}: ${err.trim()}`);
 
   return text.trim();
 }

@@ -29,7 +29,7 @@ Built for Finnish job markets (Duunitori), but the scoring and generation are fu
 
 ```bash
 # 1. Clone and install dependencies
-git clone https://github.com/hovinarri/jobbot
+git clone https://github.com/MikiPelkonen/jobbot.git
 cd jobbot
 bun install
 
@@ -39,12 +39,12 @@ cp profile.example.toml profile.toml
 
 Then open `profile.toml` and fill in your details. It has four sections:
 
-| Section | What it controls |
-|---|---|
-| `[personal]` | Your name, email, phone, location |
-| `[education]`, `[recent_role]`, etc. | Your CV — used to generate cover letters |
-| `[emphasis]` | What the letter leads with and which skills to highlight |
-| `[scoring]` | Keyword weights that rank job listings by relevance to you |
+| Section                              | What it controls                                           |
+| ------------------------------------ | ---------------------------------------------------------- |
+| `[personal]`                         | Your name, email, phone, location                          |
+| `[education]`, `[recent_role]`, etc. | Your CV — used to generate cover letters                   |
+| `[emphasis]`                         | What the letter leads with and which skills to highlight   |
+| `[scoring]`                          | Keyword weights that rank job listings by relevance to you |
 
 `profile.toml` is gitignored — your personal info never gets committed.
 
