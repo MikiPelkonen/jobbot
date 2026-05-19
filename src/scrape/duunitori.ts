@@ -2,35 +2,68 @@ import * as cheerio from "cheerio";
 import type { Job } from "../types";
 
 const BASE_URL = "https://duunitori.fi";
+const FIND_JOB_URL_SEGMENT = "/tyopaikat?haku=";
+const BASE_SOURCE = "duunitori";
+const EMPTY_STRING = "";
+
+const HEADERS = {
+  userAgent: { "User-Agent": "Mozilla/5.0" },
+} as const;
+
+const SELECTORS = {
+  jobBox: ".job-box",
+  anchor: "a.job-box__hover",
+  title: ".job-box__title",
+  location: ".job-box__job-location span",
+  posted: ".job-box__job-posted",
+  salary: ".tag--salary",
+  badge: ".tag--info, .tag--success",
+  easyApply: ".tag--easy-apply",
+  logo: ".job-box__logo",
+} as const;
+
+const DATA_ATTRS = {
+  company: "data-company",
+  href: "href",
+  category: "data-category",
+  src: "src",
+} as const;
 
 export async function scrapeDuunitori(query: string): Promise<Job[]> {
-  const url = `${BASE_URL}/tyopaikat?haku=${encodeURIComponent(query)}`;
-
-  const res = await fetch(url);
-
+  const url = `${BASE_URL}${FIND_JOB_URL_SEGMENT}${encodeURIComponent(query)}`;
+  const res = await fetch(url, {
+    headers: HEADERS.userAgent,
+  });
   const html = await res.text();
   const $ = cheerio.load(html);
   const jobs: Job[] = [];
 
-  $(".job-box").each((_, el) => {
-    const title = $(el).find(".job-box__title").text().trim();
-    const anchor = $(el).find("a.job-box__hover");
-    const company = anchor.attr("data-company") ?? "";
-    const href = anchor.attr("href") ?? "";
-    const location = $(el).find(".job-box__job-location span").text().trim();
-    const postedAt = $(el).find(".job-box__job-posted").text().trim();
+  $(SELECTORS.jobBox).each((_, el) => {
+    const anchor = $(el).find(SELECTORS.anchor);
+    const href = anchor.attr(DATA_ATTRS.href) ?? "";
+    const title = $(el).find(SELECTORS.title).text().trim();
 
-    if (title) {
-      jobs.push({
-        title,
-        company,
-        url: BASE_URL + href,
-        location,
-        description: "",
-        source: "duunitori",
-        postedAt,
-      });
-    }
+    if (!title) return;
+
+    jobs.push({
+      title,
+      company: anchor.attr(DATA_ATTRS.company) ?? EMPTY_STRING,
+      category: anchor.attr(DATA_ATTRS.category) ?? undefined,
+      url: BASE_URL + href,
+      jobId: href,
+      location: $(el)
+        .find(SELECTORS.location)
+        .text()
+        .trim()
+        .replace(/\s*-$/, EMPTY_STRING),
+      postedAt: $(el).find(SELECTORS.posted).text().trim(),
+      salary: $(el).find(SELECTORS.salary).text().trim() || undefined,
+      badge: $(el).find(SELECTORS.badge).first().text().trim() || undefined,
+      easyApply: $(el).find(SELECTORS.easyApply).length > 0,
+      logoUrl: $(el).find(SELECTORS.logo).attr(DATA_ATTRS.src) ?? undefined,
+      description: EMPTY_STRING,
+      source: BASE_SOURCE,
+    });
   });
 
   return jobs;
