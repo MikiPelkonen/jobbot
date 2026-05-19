@@ -1,4 +1,5 @@
 import { loadProfile, type Profile } from "./profile";
+import { loadResumes } from "./resumes";
 import type { Job } from "./types";
 
 function buildProfileText(p: Profile): string {
@@ -32,7 +33,7 @@ ${p.target.roles.map((r) => `- ${r}`).join("\n")}
 `.trim();
 }
 
-function buildPrompt(job: Job, p: Profile, profileText: string): string {
+function buildPrompt(job: Job, p: Profile, profileText: string, resumeText: string): string {
   const leadWith =
     p.emphasis?.lead_with ??
     `${p.recent_role.title} at ${p.recent_role.company} (${p.recent_role.period})`;
@@ -44,7 +45,7 @@ You are helping write a short, professional cover letter email for a job applica
 
 MY BACKGROUND:
 ${profileText}
-
+${resumeText ? `\nSUPPLEMENTARY DOCUMENTS (use for additional detail and specifics):\n${resumeText}\n` : ""}
 JOB:
 Title: ${job.title}
 Company: ${job.company}
@@ -67,9 +68,10 @@ INSTRUCTIONS:
 
 const profile = await loadProfile();
 const profileText = buildProfileText(profile);
+const resumeText = await loadResumes();
 
 export async function generateCoverLetter(job: Job): Promise<string> {
-  const prompt = buildPrompt(job, profile, profileText);
+  const prompt = buildPrompt(job, profile, profileText, resumeText);
   const proc = Bun.spawn(["claude", "-p", prompt], {
     stdout: "pipe",
     stderr: "pipe",

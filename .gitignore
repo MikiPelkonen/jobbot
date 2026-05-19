@@ -120,4 +120,8 @@ data/
 # personal profile — copy profile.example.toml to profile.toml and fill in your details
 profile.toml
 
+# resume documents — drop .txt, .md or .pdf files here, never pushed
+resumes/*
+!resumes/example.md
+
 CLAUDE.md
