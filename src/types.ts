@@ -13,7 +13,7 @@ export interface Job {
   easyApply?: boolean;
   logoUrl?: string;
   tags?: string[];
-  // from details scrape
+  // details
   contactName?: string;
   contactEmail?: string;
   contactPhone?: string;
@@ -22,4 +22,7 @@ export interface Job {
   // tracking
   appliedAt?: string;
   status?: "new" | "applied" | "rejected" | "interview";
+  // scoring
+  score?: number;
+  matchedKeywords?: string[];
 }

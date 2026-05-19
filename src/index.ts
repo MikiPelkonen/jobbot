@@ -1,12 +1,16 @@
 import chalk from "chalk";
 import { writeFileSync, mkdirSync } from "fs";
 import { scrapeDuunitori, scrapeJobDetails } from "./scrape";
+import { scoreJobs } from "./score";
 import type { Job } from "./types";
 
 const args = process.argv.slice(2);
 
 const ARGS = {
-  query: args.find((a) => !a.startsWith("--")) ?? "it support",
+  queries: (args.find((a) => !a.startsWith("--")) ?? "it support")
+    .split(",")
+    .map((q) => q.trim())
+    .filter(Boolean),
   withDetails: args.includes("--details"),
   save: !args.includes("--no-save"),
   limit: Number(args.find((a) => a.startsWith("--limit="))?.split("=")[1] ?? 0),
@@ -15,7 +19,15 @@ const ARGS = {
 const OUT_DIR = "data";
 const OUT_FILE = `${OUT_DIR}/jobs.json`;
 
+function scoreColor(score: number) {
+  if (score >= 50) return chalk.green.bold(`Score: ${score}`);
+  if (score >= 25) return chalk.yellow(`Score: ${score}`);
+  return chalk.dim(`Score: ${score}`);
+}
+
 const FIELD_DISPLAY: Partial<Record<keyof Job, (v: unknown) => string>> = {
+  score: (v) => scoreColor(v as number),
+  matchedKeywords: (v) => chalk.dim(`Matched: ${(v as string[]).join(", ")}`),
   postedAt: (v) => chalk.dim(`Posted: ${v}`),
   deadline: (v) => chalk.red(`Deadline: ${v}`),
   salary: (v) => chalk.yellow(`Salary: ${v}`),
@@ -33,7 +45,9 @@ function printJob(job: Job) {
 
   for (const [key, format] of Object.entries(FIELD_DISPLAY)) {
     const value = job[key as keyof Job];
-    if (value) console.log(format(value));
+    if (value !== undefined && value !== null && (Array.isArray(value) ? value.length > 0 : true)) {
+      console.log(format(value));
+    }
   }
 
   console.log(chalk.dim(job.url));
@@ -57,11 +71,23 @@ function saveJobs(jobs: Job[]) {
 
 console.log(
   chalk.bold(
-    `Scraping: "${ARGS.query}"${ARGS.withDetails ? " (with details) " : ""}\n`,
+    `Scraping: ${ARGS.queries.map((q) => `"${q}"`).join(", ")}${ARGS.withDetails ? " (with details)" : ""}\n`,
   ),
 );
 
-let jobs = await scrapeDuunitori(ARGS.query);
+// Scrape all queries and deduplicate by URL
+const seen = new Set<string>();
+let jobs: Job[] = [];
+
+for (const query of ARGS.queries) {
+  const results = await scrapeDuunitori(query);
+  for (const job of results) {
+    if (!seen.has(job.url)) {
+      seen.add(job.url);
+      jobs.push(job);
+    }
+  }
+}
 
 if (ARGS.limit > 0) jobs = jobs.slice(0, ARGS.limit);
 
@@ -79,6 +105,8 @@ if (ARGS.withDetails) {
   }
   jobs = enriched;
 }
+
+jobs = scoreJobs(jobs);
 
 if (ARGS.save) saveJobs(jobs);
 printJobs(jobs);
