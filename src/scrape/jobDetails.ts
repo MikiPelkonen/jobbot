@@ -7,7 +7,7 @@ const HEADERS = {
 
 const SELECTORS = {
   applyUrl: "a.js-jobentry-apply",
-  phoneHref: "a[href⁼'tel:']",
+  phoneHref: "a[href='tel:']",
   description: ".description--jobentry",
   mailTo: "a[href^='mailto:']",
   deadlineMeta: "meta[property='article:expiration_time']",
