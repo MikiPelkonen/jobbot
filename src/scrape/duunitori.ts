@@ -4,7 +4,6 @@ import type { Job } from "../types";
 const BASE_URL = "https://duunitori.fi";
 const FIND_JOB_URL_SEGMENT = "/tyopaikat?haku=";
 const BASE_SOURCE = "duunitori";
-const EMPTY_STRING = "";
 
 const HEADERS = {
   userAgent: { "User-Agent": "Mozilla/5.0" },
@@ -47,7 +46,7 @@ export async function scrapeDuunitori(query: string): Promise<Job[]> {
 
     jobs.push({
       title,
-      company: anchor.attr(DATA_ATTRS.company) ?? EMPTY_STRING,
+      company: anchor.attr(DATA_ATTRS.company) ?? "",
       category: anchor.attr(DATA_ATTRS.category) ?? undefined,
       url: BASE_URL + href,
       jobId: href,
@@ -55,13 +54,13 @@ export async function scrapeDuunitori(query: string): Promise<Job[]> {
         .find(SELECTORS.location)
         .text()
         .trim()
-        .replace(/\s*-$/, EMPTY_STRING),
+        .replace(/\s*-$/, ""),
       postedAt: $(el).find(SELECTORS.posted).text().trim(),
       salary: $(el).find(SELECTORS.salary).text().trim() || undefined,
       badge: $(el).find(SELECTORS.badge).first().text().trim() || undefined,
       easyApply: $(el).find(SELECTORS.easyApply).length > 0,
       logoUrl: $(el).find(SELECTORS.logo).attr(DATA_ATTRS.src) ?? undefined,
-      description: EMPTY_STRING,
+      description: "",
       source: BASE_SOURCE,
     });
   });

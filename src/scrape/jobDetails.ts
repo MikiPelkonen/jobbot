@@ -1,8 +1,6 @@
 import * as cheerio from "cheerio";
 import type { Job } from "../types";
 
-const EMPTY_STRING = "";
-
 const HEADERS = {
   userAgent: { "User-Agent": "Mozilla/5.0" },
 } as const;
@@ -23,7 +21,7 @@ const DATA_ATTRS = {
 const REPLACES = {
   tel: "tel:",
   mailTo: "mailto:",
-};
+} as const;
 
 const MATCHER = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/;
 
@@ -36,16 +34,15 @@ export async function scrapeJobDetails(job: Job): Promise<Job> {
   const $ = cheerio.load(html);
 
   const applyUrl = $(SELECTORS.applyUrl).attr(DATA_ATTRS.href) ?? undefined;
-  const phoneHref =
-    $(SELECTORS.phoneHref).attr(DATA_ATTRS.href) ?? EMPTY_STRING;
+  const phoneHref = $(SELECTORS.phoneHref).attr(DATA_ATTRS.href) ?? "";
   const contactPhone = phoneHref
-    ? phoneHref.replace(REPLACES.tel, EMPTY_STRING)
+    ? phoneHref.replace(REPLACES.tel, "")
     : undefined;
   const description = $(SELECTORS.description).text().trim();
   const mailtoHref = $(SELECTORS.mailTo).attr(DATA_ATTRS.href);
   let contactEmail: string | undefined;
   if (mailtoHref) {
-    contactEmail = mailtoHref.replace(REPLACES.mailTo, EMPTY_STRING);
+    contactEmail = mailtoHref.replace(REPLACES.mailTo, "");
   } else {
     const match = description.match(MATCHER);
     contactEmail = match?.[0] ?? undefined;
