@@ -116,3 +116,5 @@ dist
 
 # scraped local data
 data/
+
+CLAUDE.md
