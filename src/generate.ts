@@ -24,8 +24,7 @@ PREVIOUS EXPERIENCE (mention only if genuinely relevant):
 ${p.previous_experience.map((e) => `- ${e.entry}`).join("\n")}
 
 SKILLS:
-- Strong/current: ${p.skills.current.join(", ")}
-- Some experience: ${p.skills.some_experience.join(", ")}
+${Object.entries(p.skills).map(([cat, vals]) => `- ${cat.replace(/_/g, " ")}: ${vals.join(", ")}`).join("\n")}
 
 LOOKING FOR:
 ${p.target.roles.map((r) => `- ${r}`).join("\n")}
@@ -38,7 +37,7 @@ function buildPrompt(job: Job, p: Profile, profileText: string, resumeText: stri
     p.emphasis?.lead_with ??
     `${p.recent_role.title} at ${p.recent_role.company} (${p.recent_role.period})`;
   const highlightSkills =
-    p.emphasis?.highlight_skills ?? p.skills.current.slice(0, 5);
+    p.emphasis?.highlight_skills ?? Object.values(p.skills).flat().slice(0, 5);
 
   return `
 You are helping write a short, professional cover letter email for a job application.
