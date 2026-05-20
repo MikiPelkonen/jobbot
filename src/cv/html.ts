@@ -49,17 +49,43 @@ body {
   flex-direction: column;
 }
 
+body::before {
+  content: '';
+
+  position: fixed;
+  inset: 0;
+
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.015),
+      rgba(255,255,255,0.015) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+
+
+  pointer-events: none;
+
+  opacity: 0.25;
+
+  z-index: 9999;
+}
+
 /* ── HERO HEADER ── */
 header {
   position: relative;
-  min-height: 240px;
-  background-color: ${C.crust};
+  min-height: 300px;
+  background: rgba(24, 24, 37, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(8px);
   background-repeat: no-repeat, no-repeat;
   background-position: 0 0, right 18px center;
   background-size: auto, auto 86%;
   overflow: hidden;
   border-bottom: 2px solid ${C.blue};
   flex-shrink: 0;
+  z-index: 0;
 }
 header::after {
   content: '';
@@ -75,14 +101,25 @@ header::after {
   position: absolute;
   top: -30px; left: -10px;
   width: 240px; height: 200px;
-  background: radial-gradient(ellipse, ${C.blue}22 0%, transparent 70%);
+  background: radial-gradient(ellipse, ${C.blue}22 0%, transparent 50%);
   pointer-events: none;
 }
 .header-content {
   position: relative;
   z-index: 4;
-  padding: 22px 24px 18px;
-  max-width: 64%;
+  padding: 24px;
+  max-width: 65%;
+  background: rgba(24, 24, 37, 0.45);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border: 1px solid rgba(255,255,255,0.04);
+
+  box-shadow:
+    0 10px 24px rgba(0,0,0,0.25);
+
+  border-radius: 8px;
 }
 .header-content::before {
   content: '';
@@ -109,16 +146,29 @@ h1 em {
 .role-badge {
   display: inline-flex;
   align-items: center;
+
   margin: 8px 0 10px;
-  padding: 4px 16px 4px 10px;
+  padding: 6px 14px;
+
   background: ${C.blue};
   color: ${C.crust};
+
   font-family: 'Rajdhani', sans-serif;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: 1.8px;
+
+  letter-spacing: 2.2px;   /* THIS replaces manual spacing */
   text-transform: uppercase;
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 50%,
+    calc(100% - 10px) 100%,
+    0 100%
+  );
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
 }
 .contacts {
   display: flex;
@@ -154,12 +204,33 @@ h1 em {
 }
 .main {
   padding: 16px 18px 16px 20px;
-  border-right: 1px solid ${C.surface0};
+
+  background: rgba(24, 24, 37, 0.72);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-right: 1px solid rgba(255,255,255,0.06);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 10px 30px rgba(0,0,0,0.28);
+
   overflow: hidden;
 }
+
 .side {
   padding: 16px;
-  background: ${C.mantle};
+
+  background: rgba(17, 17, 27, 0.82);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  border-left: 1px solid rgba(255,255,255,0.04);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.03);
 }
 
 /* ── SECTION HEADERS ── */
@@ -191,11 +262,27 @@ h2.green    { color: ${C.green};    }
 
 /* ── EXPERIENCE ── */
 .exp-card {
-  background: ${C.surface0};
-  border: 1px solid ${C.surface1};
+  background: rgba(49, 50, 68, 0.78);
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  border: 1px solid rgba(255,255,255,0.05);
   border-left: 3px solid ${C.blue};
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
-  box-shadow: inset 3px 0 12px ${C.blue}33;
+
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% 100%,
+    0 100%
+  );
+
+  box-shadow:
+    0 10px 24px rgba(0,0,0,0.24),
+    inset 0 1px 0 rgba(255,255,255,0.03),
+    inset 3px 0 12px ${C.blue}22;
+
   padding: 10px 14px;
   margin-bottom: 10px;
 }
@@ -354,13 +441,48 @@ h2.green    { color: ${C.green};    }
 .footer-link { color: ${C.blue}; text-decoration: none; letter-spacing: 0; font-weight: 500; }
 </style>
 </head>
-<body>
+<body
+  ${
+    photoUrl
+      ? `
+        style="
+        background-image:
+          /* LEFT FADE ONLY (soft edge into transparency) */
+          linear-gradient(
+            to right,
+            ${C.base} 0%,
+            ${C.base}cc 12%,
+            ${C.base}88 25%,
+            ${C.base}44 40%,
+            transparent 70%
+          ),
 
-<header${photoUrl ? ` style="background-image: linear-gradient(to right, ${C.crust} 0%, ${C.crust} 34%, ${C.crust}dd 50%, ${C.crust}99 62%, ${C.crust}33 76%, transparent 92%), url('${photoUrl}')"` : ""}>
+          /* OPTIONAL subtle global tint (VERY light, remove if too dark) */
+          linear-gradient(
+            to bottom,
+            transparent 0%,
+            ${C.base}10 100%
+          ),
+
+          /* IMAGE */
+          url('${photoUrl}');
+
+          background-position: top -80px right -200px;
+          background-size: 90%;
+          background-attachment: fixed;
+          background-repeat: no-repeat;
+        "
+      `
+      : ""
+  }
+>
+<header>
   <div class="hero-glow"></div>
   <div class="header-content">
     <h1>${p.personal.name.split(" ").slice(0, -1).join(" ")} <em>${p.personal.name.split(" ").slice(-1)[0]}</em></h1>
-    <div class="role-badge">▸ &nbsp; Technical Generalist &nbsp;·&nbsp; IT Specialist &nbsp;·&nbsp; Game Industry</div>
+    <div class="role-badge">
+      TECHNICAL GENERALIST · IT SPECIALIST · GAME INDUSTRY
+    </div>
     <div class="contacts">
       <span><span class="ic">✉</span>${p.personal.email}</span>
       <span><span class="ic">☏</span>${p.personal.phone}</span>
@@ -406,15 +528,23 @@ h2.green    { color: ${C.green};    }
 </div>
 
 <div class="strip">
-  ${p.dev_environment?.length ? `<div class="strip-col">
+  ${
+    p.dev_environment?.length
+      ? `<div class="strip-col">
     <div class="strip-h" style="color:${C.green}"><span class="sh-d"></span>&gt;_ Dev Environment</div>
     ${devEnvRows(p.dev_environment)}
-  </div>` : ""}
+  </div>`
+      : ""
+  }
 
-  ${p.hobbies?.length ? `<div class="strip-col">
+  ${
+    p.hobbies?.length
+      ? `<div class="strip-col">
     <div class="strip-h" style="color:${C.peach}"><span class="sh-d"></span>Interests</div>
     ${p.hobbies.map((h) => `<div class="strip-hobby">${h}</div>`).join("")}
-  </div>` : ""}
+  </div>`
+      : ""
+  }
 
   <div class="strip-col">
     <div class="strip-h" style="color:${C.mauve}"><span class="sh-d"></span>Languages</div>
