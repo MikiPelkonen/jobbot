@@ -21,8 +21,8 @@ export function buildLetterHtml(
     : "";
 
   const bodyLines = letterBody
-    .split("\n")
-    .map((line) => (line.trim() === "" ? `<div class="para-gap"></div>` : `<p>${line}</p>`))
+    .split("\n\n")
+    .map((para) => `<p>${para.replace(/\n/g, " ")}</p>`)
     .join("\n");
 
   return `<!DOCTYPE html>
@@ -166,7 +166,7 @@ header::after {
   color: ${C.subtext1};
   font-size: 10.5px;
   line-height: 1.65;
-  margin-bottom: 0;
+  margin-bottom: 10px;
 }
 .para-gap { height: 10px; }
 
