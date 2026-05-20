@@ -1,97 +1,10 @@
-import {
-  existsSync,
-  readdirSync,
-  mkdirSync,
-  writeFileSync,
-  unlinkSync,
-} from "fs";
-import path from "path";
-import chalk from "chalk";
-import { loadProfile, type Profile } from "./profile";
-import pkg from "../package.json" with { type: "json" };
+import type { Profile } from "../profile";
+import { C } from "./theme";
+import { renderSkillGroups } from "./skills";
+import pkg from "../../package.json" with { type: "json" };
 
-const ASSETS_DIR = "assets";
-const OUT_DIR = "data";
-const OUT_FILE = `${OUT_DIR}/cv.pdf`;
-const TMP_HTML = `${OUT_DIR}/_cv_tmp.html`;
-
-// Catppuccin Mocha
-const C = {
-  base: "#1e1e2e",
-  mantle: "#181825",
-  crust: "#11111b",
-  surface0: "#313244",
-  surface1: "#45475a",
-  surface2: "#585b70",
-  overlay1: "#7f849c",
-  subtext0: "#a6adc8",
-  subtext1: "#bac2de",
-  text: "#cdd6f4",
-  lavender: "#b4befe",
-  blue: "#89b4fa",
-  sapphire: "#74c7ec",
-  sky: "#89dceb",
-  teal: "#94e2d5",
-  green: "#a6e3a1",
-  yellow: "#f9e2af",
-  peach: "#fab387",
-  mauve: "#cba6f7",
-  pink: "#f5c2e7",
-};
-
-// B8: per-category accent colors for skill groups
-const CAT_COLOR: Record<string, string> = {
-  gamedev: C.green,
-  web: C.blue,
-  backend_devops: C.peach,
-  it_support: C.teal,
-  databases: C.sapphire,
-  languages: C.lavender,
-  tools: C.overlay1,
-};
-
-function findPhoto(): string | null {
-  if (!existsSync(ASSETS_DIR)) return null;
-  const file = readdirSync(ASSETS_DIR).find((f) =>
-    /^photo\.(jpg|jpeg|png|webp)$/i.test(f),
-  );
-  return file ? path.join(ASSETS_DIR, file) : null;
-}
-
-async function photoToDataUrl(filePath: string): Promise<string> {
-  const buf = await Bun.file(filePath).arrayBuffer();
-  const ext = path.extname(filePath).slice(1).toLowerCase();
-  const mime = ext === "jpg" ? "jpeg" : ext;
-  return `data:image/${mime};base64,${Buffer.from(buf).toString("base64")}`;
-}
-
-function tag(label: string, color: string = C.blue): string {
-  return `<span style="display:inline-block;background:${C.surface1};color:${color};border:1px solid ${C.surface2};border-radius:3px;padding:2px 8px;font-size:9px;margin:2px 2px 2px 0;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.3px">${label}</span>`;
-}
-
-function renderSkillGroups(skills: Record<string, string[]>): string {
-  return Object.entries(skills)
-    .map(([category, values]) => {
-      if (!Array.isArray(values) || !values.length) return "";
-      const color = CAT_COLOR[category] ?? C.blue;
-      const title = category
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase());
-      return `<div style="margin-bottom:7px">
-        <div style="font-size:7px;color:${color};margin-bottom:3px;font-family:'Rajdhani',sans-serif;letter-spacing:1.8px;text-transform:uppercase;border-left:2px solid ${color};padding-left:5px">▸ ${title}</div>
-        <div>${values.map((s) => tag(s, color)).join("")}</div>
-      </div>`;
-    })
-    .join("");
-}
-
-function buildHtml(p: Profile, photoUrl: string | null): string {
-  const attr = p.attribution;
-  const r = p.recent_role;
-  const prevExp = p.previous_experience;
-
-  // A6: parse "KEY | value" into terminal-style key-value rows
-  const devEnvRows = (p.dev_environment ?? [])
+function devEnvRows(lines: string[]): string {
+  return lines
     .map((d) => {
       const sep = d.indexOf(" | ");
       if (sep === -1)
@@ -99,6 +12,12 @@ function buildHtml(p: Profile, photoUrl: string | null): string {
       return `<div class="devenv-row"><span class="devenv-key">${d.slice(0, sep)}</span><span class="devenv-val">${d.slice(sep + 3)}</span></div>`;
     })
     .join("");
+}
+
+export function buildHtml(p: Profile, photoUrl: string | null): string {
+  const attr = p.attribution;
+  const r = p.recent_role;
+  const prevExp = p.previous_experience;
 
   const footerHtml = attr?.enabled
     ? `<footer class="cv-footer">
@@ -130,11 +49,10 @@ body {
   flex-direction: column;
 }
 
-/* ── HERO HEADER ──
-   A1: photo as background-image directly on <header> — no separate div, no seam */
+/* ── HERO HEADER ── */
 header {
   position: relative;
-  min-height: 130px;
+  min-height: 240px;
   background-color: ${C.crust};
   background-repeat: no-repeat, no-repeat;
   background-position: 0 0, right 18px center;
@@ -143,8 +61,6 @@ header {
   border-bottom: 2px solid ${C.blue};
   flex-shrink: 0;
 }
-
-/* A2: bottom-right corner bracket — mirrors top-left on .header-content */
 header::after {
   content: '';
   position: absolute;
@@ -155,7 +71,6 @@ header::after {
   z-index: 5;
   pointer-events: none;
 }
-
 .hero-glow {
   position: absolute;
   top: -30px; left: -10px;
@@ -163,15 +78,12 @@ header::after {
   background: radial-gradient(ellipse, ${C.blue}22 0%, transparent 70%);
   pointer-events: none;
 }
-
 .header-content {
   position: relative;
   z-index: 4;
   padding: 22px 24px 18px;
   max-width: 64%;
 }
-
-/* A2: top-left corner bracket */
 .header-content::before {
   content: '';
   position: absolute;
@@ -180,8 +92,6 @@ header::after {
   border-top: 2px solid ${C.blue};
   border-left: 2px solid ${C.blue};
 }
-
-/* B10: name glow */
 h1 {
   font-family: 'Cinzel', serif;
   font-size: 23px;
@@ -196,8 +106,6 @@ h1 em {
   font-style: normal;
   text-shadow: 0 0 20px ${C.blue}88;
 }
-
-/* A3: chevron clip-path on role badge */
 .role-badge {
   display: inline-flex;
   align-items: center;
@@ -212,7 +120,6 @@ h1 em {
   text-transform: uppercase;
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
 }
-
 .contacts {
   display: flex;
   flex-wrap: wrap;
@@ -222,7 +129,6 @@ h1 em {
 }
 .contacts span { display: flex; align-items: center; gap: 4px; }
 .contacts .ic { color: ${C.sapphire}; }
-
 .summary-text {
   margin-top: 10px;
   max-width: 460px;
@@ -234,8 +140,6 @@ h1 em {
 }
 
 /* ── LAYOUT ── */
-
-/* A5: content-area wraps the two-column body + bottom strip */
 .content-area {
   flex: 1;
   display: flex;
@@ -260,7 +164,6 @@ h1 em {
 
 /* ── SECTION HEADERS ── */
 section { margin-bottom: 14px; }
-
 h2 {
   display: flex;
   align-items: center;
@@ -286,8 +189,7 @@ h2.teal     { color: ${C.teal};     }
 h2.lavender { color: ${C.lavender}; }
 h2.green    { color: ${C.green};    }
 
-/* ── EXPERIENCE CARDS ──
-   A4: angular top-right cut, B7: inner glow on left edge */
+/* ── EXPERIENCE ── */
 .exp-card {
   background: ${C.surface0};
   border: 1px solid ${C.surface1};
@@ -342,7 +244,6 @@ h2.green    { color: ${C.green};    }
   line-height: 1.45;
 }
 .exp-card li::marker { color: ${C.teal}; }
-
 .prev-entry {
   margin-bottom: 6px;
   padding: 5px 0 5px 10px;
@@ -351,7 +252,6 @@ h2.green    { color: ${C.green};    }
   font-size: 8.8px;
   line-height: 1.45;
 }
-
 .edu-entry {
   margin-bottom: 6px;
   padding: 6px 9px;
@@ -362,7 +262,7 @@ h2.green    { color: ${C.green};    }
   line-height: 1.4;
 }
 
-/* ── BOTTOM STRIP ── A5 */
+/* ── BOTTOM STRIP ── */
 .strip {
   flex-shrink: 0;
   display: flex;
@@ -376,7 +276,6 @@ h2.green    { color: ${C.green};    }
   overflow: hidden;
 }
 .strip-col:last-child { border-right: none; }
-
 .strip-h {
   font-family: 'Rajdhani', sans-serif;
   font-size: 7.5px;
@@ -397,8 +296,6 @@ h2.green    { color: ${C.green};    }
   transform: rotate(45deg);
   flex-shrink: 0;
 }
-
-/* A6: terminal-style dev env key-value */
 .devenv-row {
   display: flex;
   align-items: baseline;
@@ -420,16 +317,6 @@ h2.green    { color: ${C.green};    }
   color: ${C.subtext1};
   line-height: 1.35;
 }
-
-.strip-edu {
-  font-size: 7.5px;
-  color: ${C.subtext0};
-  margin-bottom: 4px;
-  padding: 3px 7px;
-  border-left: 2px solid ${C.lavender};
-  background: ${C.surface0};
-  line-height: 1.35;
-}
 .strip-lang {
   font-size: 8.5px;
   color: ${C.subtext1};
@@ -446,6 +333,7 @@ h2.green    { color: ${C.green};    }
   line-height: 1.35;
 }
 
+/* ── FOOTER ── */
 .cv-footer {
   display: flex;
   align-items: center;
@@ -468,7 +356,6 @@ h2.green    { color: ${C.green};    }
 </head>
 <body>
 
-<!-- A1: photo + gradient fused into header background-image — eliminates seam -->
 <header${photoUrl ? ` style="background-image: linear-gradient(to right, ${C.crust} 0%, ${C.crust} 34%, ${C.crust}dd 50%, ${C.crust}99 62%, ${C.crust}33 76%, transparent 92%), url('${photoUrl}')"` : ""}>
   <div class="hero-glow"></div>
   <div class="header-content">
@@ -485,7 +372,6 @@ h2.green    { color: ${C.green};    }
   </div>
 </header>
 
-<!-- A5: content-area → two-column body + bottom strip -->
 <div class="content-area">
 <div class="body">
 
@@ -510,7 +396,6 @@ h2.green    { color: ${C.green};    }
     </section>
   </div>
 
-  <!-- B8: skills sidebar — categories color-coded by domain -->
   <div class="side">
     <section>
       <h2 class="teal"><span class="h2-diamond"></span>Skills</h2>
@@ -520,75 +405,25 @@ h2.green    { color: ${C.green};    }
 
 </div>
 
-<!-- A5: bottom strip — dev env | education | languages + hobbies -->
 <div class="strip">
-
-  ${
-    p.dev_environment?.length
-      ? `<div class="strip-col">
+  ${p.dev_environment?.length ? `<div class="strip-col">
     <div class="strip-h" style="color:${C.green}"><span class="sh-d"></span>&gt;_ Dev Environment</div>
-    ${devEnvRows}
-  </div>`
-      : ""
-  }
-
+    ${devEnvRows(p.dev_environment)}
+  </div>` : ""}
 
   ${p.hobbies?.length ? `<div class="strip-col">
     <div class="strip-h" style="color:${C.peach}"><span class="sh-d"></span>Interests</div>
     ${p.hobbies.map((h) => `<div class="strip-hobby">${h}</div>`).join("")}
   </div>` : ""}
 
-
   <div class="strip-col">
     <div class="strip-h" style="color:${C.mauve}"><span class="sh-d"></span>Languages</div>
     ${p.languages.list.map((l) => `<div class="strip-lang">${l}</div>`).join("")}
   </div>
-
 </div>
 </div>
 
 ${footerHtml}
 </body>
 </html>`;
-}
-
-async function htmlToPdf(htmlPath: string, outPath: string): Promise<void> {
-  const absHtml = path.resolve(htmlPath);
-  const absOut = path.resolve(outPath);
-  const proc = Bun.spawn(
-    [
-      "chromium",
-      "--headless",
-      "--disable-gpu",
-      "--no-sandbox",
-      `--print-to-pdf=${absOut}`,
-      "--print-to-pdf-no-header",
-      "--no-pdf-header-footer",
-      `file://${absHtml}`,
-    ],
-    { stdout: "pipe", stderr: "pipe" },
-  );
-  await new Response(proc.stdout).text();
-  const err = await new Response(proc.stderr).text();
-  const exitCode = await proc.exited;
-  if (exitCode !== 0)
-    throw new Error(`chromium exited ${exitCode}: ${err.trim()}`);
-}
-
-const profile = await loadProfile();
-const photoPath = findPhoto();
-const photoUrl = photoPath ? await photoToDataUrl(photoPath) : null;
-if (photoPath) console.log(chalk.dim(`Photo: ${photoPath}`));
-
-const html = buildHtml(profile, photoUrl);
-mkdirSync(OUT_DIR, { recursive: true });
-writeFileSync(TMP_HTML, html);
-
-process.stdout.write(chalk.dim("Generating CV PDF..."));
-try {
-  await htmlToPdf(TMP_HTML, OUT_FILE);
-  console.log(chalk.green(" done"));
-  console.log(chalk.bold(`Saved -> ${OUT_FILE}`));
-} finally {
-  if (existsSync(TMP_HTML)) unlinkSync(TMP_HTML);
 }

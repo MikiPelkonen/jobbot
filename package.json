@@ -10,7 +10,7 @@
     "apply": "bun src/apply.ts",
     "apply:4": "bun src/apply.ts --top=4 --min-score=5",
     "apply:top10": "bun src/apply.ts --top=10 --min-score=5",
-    "cv": "bun src/cv.ts",
+    "cv": "bun src/cv/index.ts",
     "release": "npm version"
   },
   "devDependencies": {
