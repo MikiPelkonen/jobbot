@@ -50,11 +50,7 @@ export async function scrapeDuunitori(query: string): Promise<Job[]> {
       category: anchor.attr(DATA_ATTRS.category) ?? undefined,
       url: BASE_URL + href,
       jobId: href,
-      location: $(el)
-        .find(SELECTORS.location)
-        .text()
-        .trim()
-        .replace(/\s*-$/, ""),
+      location: $(el).find(SELECTORS.location).text().trim().replace(/\s*-$/, ""),
       postedAt: $(el).find(SELECTORS.posted).text().trim(),
       salary: $(el).find(SELECTORS.salary).text().trim() || undefined,
       badge: $(el).find(SELECTORS.badge).first().text().trim() || undefined,

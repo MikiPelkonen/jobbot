@@ -7,8 +7,7 @@ function devEnvRows(lines: string[]): string {
   return lines
     .map((d) => {
       const sep = d.indexOf(" | ");
-      if (sep === -1)
-        return `<div class="devenv-row"><span class="devenv-val">${d}</span></div>`;
+      if (sep === -1) return `<div class="devenv-row"><span class="devenv-val">${d}</span></div>`;
       return `<div class="devenv-row"><span class="devenv-key">${d.slice(0, sep)}</span><span class="devenv-val">${d.slice(sep + 3)}</span></div>`;
     })
     .join("");

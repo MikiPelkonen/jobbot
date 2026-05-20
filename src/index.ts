@@ -13,7 +13,10 @@ const profile = await loadProfile();
 
 const ARGS = {
   queries: cliQuery
-    ? cliQuery.split(",").map((q) => q.trim()).filter(Boolean)
+    ? cliQuery
+        .split(",")
+        .map((q) => q.trim())
+        .filter(Boolean)
     : profile.search.queries,
   withDetails: args.includes("--details"),
   save: !args.includes("--no-save"),
@@ -49,11 +52,7 @@ function printJob(job: Job) {
 
   for (const [key, format] of Object.entries(FIELD_DISPLAY)) {
     const value = job[key as keyof Job];
-    if (
-      value !== undefined &&
-      value !== null &&
-      (Array.isArray(value) ? value.length > 0 : true)
-    ) {
+    if (value !== undefined && value !== null && (Array.isArray(value) ? value.length > 0 : true)) {
       console.log(format(value));
     }
   }

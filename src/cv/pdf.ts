@@ -5,9 +5,7 @@ const ASSETS_DIR = "assets";
 
 export function findPhoto(): string | null {
   if (!existsSync(ASSETS_DIR)) return null;
-  const file = readdirSync(ASSETS_DIR).find((f) =>
-    /^photo\.(jpg|jpeg|png|webp)$/i.test(f),
-  );
+  const file = readdirSync(ASSETS_DIR).find((f) => /^photo\.(jpg|jpeg|png|webp)$/i.test(f));
   return file ? path.join(ASSETS_DIR, file) : null;
 }
 
@@ -37,6 +35,5 @@ export async function htmlToPdf(htmlPath: string, outPath: string): Promise<void
   await new Response(proc.stdout).text();
   const err = await new Response(proc.stderr).text();
   const exitCode = await proc.exited;
-  if (exitCode !== 0)
-    throw new Error(`chromium exited ${exitCode}: ${err.trim()}`);
+  if (exitCode !== 0) throw new Error(`chromium exited ${exitCode}: ${err.trim()}`);
 }

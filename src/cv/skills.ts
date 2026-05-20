@@ -9,9 +9,7 @@ export function renderSkillGroups(skills: Record<string, string[]>): string {
     .map(([category, values]) => {
       if (!Array.isArray(values) || !values.length) return "";
       const color = CAT_COLOR[category] ?? C.blue;
-      const title = category
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase());
+      const title = category.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
       return `<div style="margin-bottom:6px">
         <div style="font-size:7px;color:${color};margin-bottom:3px;font-family:'Rajdhani',sans-serif;letter-spacing:1.8px;text-transform:uppercase;border-left:2px solid ${color};padding-left:5px">▸ ${title}</div>
         <div>${values.map((s) => tag(s, color)).join("")}</div>

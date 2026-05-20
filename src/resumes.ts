@@ -31,9 +31,7 @@ export async function loadResumes(): Promise<string> {
     const filePath = path.join(RESUMES_DIR, file);
     try {
       const ext = path.extname(file).toLowerCase();
-      const text = ext === ".pdf"
-        ? await readPdf(filePath)
-        : await Bun.file(filePath).text();
+      const text = ext === ".pdf" ? await readPdf(filePath) : await Bun.file(filePath).text();
 
       if (text.trim()) {
         parts.push(`--- ${file} ---\n${text.trim()}`);

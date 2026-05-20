@@ -35,9 +35,7 @@ export async function scrapeJobDetails(job: Job): Promise<Job> {
 
   const applyUrl = $(SELECTORS.applyUrl).attr(DATA_ATTRS.href) ?? undefined;
   const phoneHref = $(SELECTORS.phoneHref).attr(DATA_ATTRS.href) ?? "";
-  const contactPhone = phoneHref
-    ? phoneHref.replace(REPLACES.tel, "")
-    : undefined;
+  const contactPhone = phoneHref ? phoneHref.replace(REPLACES.tel, "") : undefined;
   const description = $(SELECTORS.description).text().trim();
   const mailtoHref = $(SELECTORS.mailTo).attr(DATA_ATTRS.href);
   let contactEmail: string | undefined;

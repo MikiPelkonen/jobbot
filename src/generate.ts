@@ -24,7 +24,9 @@ PREVIOUS EXPERIENCE (mention only if genuinely relevant):
 ${p.previous_experience.map((e) => `- ${e.entry}`).join("\n")}
 
 SKILLS:
-${Object.entries(p.skills).map(([cat, vals]) => `- ${cat.replace(/_/g, " ")}: ${vals.join(", ")}`).join("\n")}
+${Object.entries(p.skills)
+  .map(([cat, vals]) => `- ${cat.replace(/_/g, " ")}: ${vals.join(", ")}`)
+  .join("\n")}
 
 LOOKING FOR:
 ${p.target.roles.map((r) => `- ${r}`).join("\n")}
@@ -82,8 +84,7 @@ export async function generateCoverLetter(job: Job): Promise<string> {
   ]);
 
   const exitCode = await proc.exited;
-  if (exitCode !== 0)
-    throw new Error(`claude exited ${exitCode}: ${err.trim()}`);
+  if (exitCode !== 0) throw new Error(`claude exited ${exitCode}: ${err.trim()}`);
 
   const body = text.trim();
   const attr = profile.attribution;
