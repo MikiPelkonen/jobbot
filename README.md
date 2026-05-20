@@ -1,8 +1,8 @@
 # jobbot
 
-AI-assisted CLI job application workflow. Scrapes job listings, scores them by relevance, and generates tailored cover letter emails using Claude — ready to copy-paste into application forms.
+AI-assisted CLI job application workflow. Scrapes job listings, scores them by relevance, generates tailored cover letter emails using Claude, and produces a styled PDF CV — all from a single gitignored `profile.toml`.
 
-Built for Finnish job markets (Duunitori), but the scoring and generation are fully configurable via a TOML profile.
+Built for Finnish job markets (Duunitori), but the scoring and generation are fully configurable.
 
 ---
 
@@ -11,6 +11,7 @@ Built for Finnish job markets (Duunitori), but the scoring and generation are fu
 - Scrapes Duunitori with multiple search queries, deduplicates results
 - Scores and ranks jobs by relevance based on your own keyword weights
 - Generates tailored cover letter emails via the local `claude` CLI (no API key needed)
+- Generates a dark-themed A4 PDF CV from your profile — photo, skills sidebar, timeline, glassmorphism styling
 - Saves letters to `data/apply/` and prints them copy-paste ready in the terminal
 - All personal info and scoring config lives in a gitignored `profile.toml`
 - Drop your CV and employment documents into `resumes/` — the app reads them automatically to enrich generated letters
@@ -21,9 +22,10 @@ Built for Finnish job markets (Duunitori), but the scoring and generation are fu
 
 - [Bun](https://bun.sh) v1.0+
 - [Claude Code](https://claude.ai/code) CLI installed and authenticated (`claude` must be in PATH)
-- `pdftotext` for PDF resume support — install via `poppler-utils` (Linux) or `poppler` (macOS via Homebrew)
+- Chromium — for PDF generation (`chromium` must be in PATH)
+- `pdftotext` — for PDF resume support, install via `poppler-utils` (Linux) or `poppler` (macOS/Homebrew)
 
-> **Node.js:** The project uses Bun-specific APIs (`Bun.file`, `Bun.spawn`). It does not run on Node without modifications.
+> The project uses Bun-specific APIs (`Bun.file`, `Bun.spawn`). It does not run on Node without modifications.
 
 ---
 
@@ -39,59 +41,61 @@ bun install
 cp profile.example.toml profile.toml
 ```
 
-Then open `profile.toml` and fill in your details. It has four sections:
+Open `profile.toml` and fill in your details. See [Profile reference](#profile-reference) below.
 
-| Section | What it controls |
-|---|---|
-| `[personal]` | Your name, email, phone, location |
-| `[education]`, `[recent_role]`, etc. | Your CV — used to generate cover letters |
-| `[emphasis]` | What the letter leads with and which skills to highlight |
-| `[scoring]` | Keyword weights that rank job listings by relevance to you |
+### Photo (optional)
 
-`profile.toml` is gitignored — your personal info never gets committed.
+Drop a photo named `photo.jpg`, `photo.png`, or `photo.webp` into the `assets/` folder. It will be rendered in the CV hero header, faded into the background. The `assets/` folder is gitignored.
 
 ### Resume documents (optional)
 
-Drop CV files, certificates of employment, or reference letters into the `resumes/` folder. Supported formats: `.txt`, `.md`, `.pdf`
+Drop CV files, certificates of employment, or reference letters into `resumes/`. Supported: `.txt`, `.md`, `.pdf`
 
 ```
 resumes/
   my-cv.pdf
-  lightneer-certificate.pdf
-  old-cv.txt
+  certificate-of-employment.pdf
 ```
 
-The app reads every file in that folder and passes the content to Claude as supplementary context when generating letters. The more detail you provide, the more specific the output. The `resumes/` folder is gitignored — files you add there are never pushed.
+The app reads every file and passes the content to Claude when generating cover letters. The `resumes/` folder is gitignored.
 
 ---
 
 ## Usage
+
+### Generate your CV
+
+Generates a dark-themed A4 PDF at `data/cv.pdf`.
+
+```bash
+bun run cv
+```
 
 ### Browse and score jobs
 
 Scrapes, scores, and saves results to `data/jobs.json`.
 
 ```bash
-bun run scrape "it support,unity developer,qa"
-bun run scrape:details "it support,unity developer,qa"   # includes full descriptions
+bun run scrape
+bun run scrape:details   # includes full job descriptions (slower)
 ```
 
 Options:
 
 ```
---details        Fetch full job description for each listing (slower)
+--details        Fetch full job description for each listing
 --no-save        Don't write to data/jobs.json
 --limit=N        Cap results at N jobs
 ```
 
 ### Generate cover letters
 
-Scrapes, scores, takes the top N jobs, and generates a cover letter for each using Claude.
+Scrapes, scores, and generates a cover letter for each top job via Claude.
 
 ```bash
-bun run apply "it support,unity developer,qa"
-bun run apply:4 "it support,unity developer,qa"         # top 4 (TE-palvelut requirement)
-bun run apply:top10 "it support,unity developer,qa"     # top 10, lower score threshold
+bun run apply
+bun run apply:4          # top 4, min score 5  (TE-palvelut requirement)
+bun run apply:top10      # top 10, lower score threshold
 ```
 
 Options:
@@ -101,28 +105,76 @@ Options:
 --min-score=N    Skip jobs below this score threshold (default: 10)
 ```
 
-Each letter is printed to the terminal with a clear separator and saved to `data/apply/`.
+Each letter is printed to the terminal and saved to `data/apply/`.
 
 ---
 
-## Tuning the scorer
+## Profile reference
 
-Open `profile.toml` and edit `[scoring.title]` and `[scoring.description]`. Each entry is a keyword and a weight — higher weight means more relevant to you.
+### Root-level arrays
+
+These **must come before any `[table]` headers** in the file (TOML spec).
+
+```toml
+hobbies = ["Pixel art", "Music production", "Game jams"]
+
+dev_environment = [
+  "OS | EndeavourOS",
+  "Editor | Neovim (LazyVim)",
+  "Shell | Fish / Bash",
+]
+```
+
+`dev_environment` entries use `KEY | value` format for the terminal-style row in the CV. Entries without ` | ` render as plain text.
+
+### Skills
+
+Skills are grouped by category. Each key maps to an accent color in the CV sidebar:
+
+| Key | Color |
+|---|---|
+| `gamedev` | green |
+| `web` | blue |
+| `backend_devops` | peach |
+| `it_support` | teal |
+| `databases` | sapphire |
+| `languages` | lavender |
+| `tools` | grey |
+
+```toml
+[skills]
+gamedev    = ["Unity", "C#", "UI Toolkit"]
+web        = ["TypeScript", "React", "HTML5 Canvas"]
+it_support = ["Helpdesk", "Active Directory", "Linux"]
+```
+
+### Scoring
 
 ```toml
 [scoring.title]
 "it support" = 30
-"unity" = 30
-"helpdesk" = 25
-"developer" = 5
+"unity" = 25
 
 [scoring.description]
 "linux" = 8
-"typescript" = 8
 "game" = 4
+
+[scoring.location]
+finland = ["helsinki", "espoo", "tampere", "suomi", "finland"]
+location_points = 10
+remote_keywords = ["remote", "etä"]
+remote_points = 5
 ```
 
-Title matches are weighted higher than description matches. Location bonuses are configured under `[scoring.location]`.
+### Attribution footer
+
+```toml
+[attribution]
+enabled = true
+repo = "https://github.com/YOUR_USERNAME/jobbot"
+```
+
+Renders a small footer at the bottom of the CV. Set `enabled = false` to hide it.
 
 ---
 
@@ -130,21 +182,27 @@ Title matches are weighted higher than description matches. Location bonuses are
 
 ```
 src/
-  index.ts        # Browse/score entrypoint
-  apply.ts        # Generate cover letters entrypoint
-  score.ts        # Job scoring logic
-  generate.ts     # Cover letter generation via claude CLI
-  profile.ts      # Shared profile loader
-  resumes.ts      # Resume document reader (.txt, .md, .pdf)
+  index.ts          # Scrape/score entrypoint
+  apply.ts          # Cover letter generation entrypoint
+  profile.ts        # Profile loader and types
+  score.ts          # Job scoring logic
+  generate.ts       # Cover letter generation via claude CLI
+  resumes.ts        # Resume document reader (.txt, .md, .pdf)
   scrape/
-    duunitori.ts  # Duunitori scraper
-    jobDetails.ts # Job detail page scraper
-  types.ts        # Shared types
+    duunitori.ts    # Duunitori scraper
+    jobDetails.ts   # Job detail page scraper
+  cv/
+    index.ts        # CV generation entrypoint
+    html.ts         # HTML/CSS template (full A4 layout)
+    pdf.ts          # Photo loading, Chromium PDF export
+    skills.ts       # Skill tag and group renderers
+    theme.ts        # Catppuccin Mocha palette + category colors
 
-profile.toml          # Your profile (gitignored)
-profile.example.toml  # Template to copy
-resumes/              # Your CV documents (gitignored, except example.md)
-data/                 # Scraped results and generated letters (gitignored)
+assets/              # Photo goes here (gitignored)
+resumes/             # Your CV documents (gitignored)
+data/                # Scraped results, letters, cv.pdf (gitignored)
+profile.toml         # Your profile (gitignored)
+profile.example.toml # Template to copy
 ```
 
 ---
@@ -155,6 +213,18 @@ data/                 # Scraped results and generated letters (gitignored)
 
 1. Your structured profile from `profile.toml`
 2. Any documents found in `resumes/` as supplementary context
-3. The job title, company, location and description
+3. The job title, company, location, and description
 
-No API key is required — it uses your active Claude Code session. Letters match the language of the job posting (Finnish or English).
+No API key required — it uses your active Claude Code session. Letters match the language of the job posting (Finnish or English).
+
+---
+
+## Versioning
+
+```bash
+bun run release patch   # 1.0.0 → 1.0.1
+bun run release minor   # 1.0.0 → 1.1.0
+bun run release major   # 1.0.0 → 2.0.0
+```
+
+This bumps `package.json`, creates a git commit, and tags the release.

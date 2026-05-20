@@ -1,18 +1,37 @@
 # Copy this file to profile.toml and fill in your details.
 # profile.toml is gitignored — your personal info stays local.
 
+# ── Root-level arrays must come before any [table] headers ──────────────────
+hobbies = [
+  "Game development — Unity projects, game jams",
+  "Music — acoustic and electronic production",
+  "Another hobby",
+]
+
+dev_environment = [
+  "OS | EndeavourOS (Arch-based) daily driver",
+  "WM | Hyprland (tiling/wayland)",
+  "Editor | Neovim (LazyVim) + Rider / VSCode",
+  "Term | foot + tmux",
+  "Shell | Fish (interactive) / Bash (scripts)",
+]
+
+# ────────────────────────────────────────────────────────────────────────────
+
 [personal]
 name = "Your Name"
 email = "you@example.com"
 phone = "+358 XX XXXXXXX"
 location = "City, Finland. Open to remote."
-summary = "Optional one or two sentence professional summary shown at the top of the CV."
+github = "github.com/youruser"
+website = "yoursite.dev"  # optional, remove if unused
+summary = "One or two sentence professional summary shown at the top of the CV."
 
 [languages]
 list = ["Finnish (native)", "English (fluent)"]
 
 [[education]]
-entry = "Degree, School, Year–Year"
+entry = "Degree Name, School Name, Year–Year"
 
 [[education]]
 entry = "Another Degree, School, Year–present"
@@ -34,10 +53,20 @@ entry = "Role, Company (Years): brief description"
 [[previous_experience]]
 entry = "Role, Company (Years): brief description"
 
+# ── Skills — one array per category ─────────────────────────────────────────
+# Category keys map to accent colors in the CV sidebar:
+#   gamedev → green  |  web → blue  |  backend_devops → peach
+#   it_support → teal  |  databases → sapphire  |  languages → lavender  |  tools → grey
 [skills]
-current = ["Skill A", "Skill B", "Skill C"]
-some_experience = ["Skill D", "Skill E"]
+gamedev        = ["Unity", "C#", "Game Design"]
+web            = ["HTML5", "CSS", "TypeScript", "React"]
+backend_devops = ["Node.js", "Docker", "Linux"]
+it_support     = ["Helpdesk", "Troubleshooting", "Active Directory"]
+databases      = ["SQLite", "PostgreSQL"]
+languages      = ["C#", "TypeScript", "Python", "Bash"]
+tools          = ["Git", "Neovim", "VS Code"]
 
+# ── Job search ───────────────────────────────────────────────────────────────
 [target]
 roles = [
   "Role type 1",
@@ -45,26 +74,20 @@ roles = [
 ]
 location_preference = "Finland-based or remote"
 
-# Optional: override what the cover letter leads with and which skills to highlight.
-# Defaults to recent_role title+company and the first 5 current skills if omitted.
-hobbies = [
-  "Game development — describe your game projects",
-  "Another hobby",
-]
-
 [search]
 queries = [
   "your job title",
   "another search term",
 ]
 
+# ── Cover letter emphasis ────────────────────────────────────────────────────
+# Optional: override what the cover letter leads with and which skills to highlight.
 [emphasis]
 lead_with = "Your most relevant role or achievement to lead with"
 highlight_skills = ["Skill A", "Skill B", "Skill C"]
 
-# --- Scoring ---
+# ── Scoring ──────────────────────────────────────────────────────────────────
 # Title keyword weights — higher = more relevant to you.
-# Checked against job title (case-insensitive).
 [scoring.title]
 "your job title keyword" = 30
 "another title keyword" = 25
@@ -81,6 +104,7 @@ location_points = 10
 remote_keywords = ["remote", "etä"]
 remote_points = 5
 
+# ── Attribution footer ───────────────────────────────────────────────────────
 [attribution]
 enabled = true
 repo = "https://github.com/YOUR_USERNAME/jobbot"
