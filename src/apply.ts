@@ -1,9 +1,11 @@
 import chalk from "chalk";
-import { writeFileSync, mkdirSync } from "fs";
+import { writeFileSync, mkdirSync, existsSync, unlinkSync } from "fs";
 import { scrapeDuunitori } from "./scrape";
 import { scoreJobs } from "./score";
 import { generateCoverLetter } from "./generate";
 import { loadProfile } from "./profile";
+import { buildLetterHtml } from "./cv/letter";
+import { htmlToPdf } from "./cv/pdf";
 import type { Job } from "./types";
 import pkg from "../package.json" with { type: "json" };
 
@@ -73,12 +75,30 @@ for (const job of jobs) {
 
   try {
     const letter = await generateCoverLetter(job);
-    const filename = `${OUT_DIR}/${slug(job)}.txt`;
-    writeFileSync(filename, `${job.title} @ ${job.company}\n${job.url}\n\n${letter}\n`);
+    const base = `${OUT_DIR}/${slug(job)}`;
+    const txtFile = `${base}.txt`;
+    const pdfFile = `${base}.pdf`;
+    const tmpHtml = `${OUT_DIR}/_tmp_letter.html`;
+
+    writeFileSync(txtFile, `${job.title} @ ${job.company}\n${job.url}\n\n${letter}\n`);
+
+    const date = new Date().toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    const html = buildLetterHtml(profile, job.title, job.company, letter, date);
+    writeFileSync(tmpHtml, html);
+    try {
+      await htmlToPdf(tmpHtml, pdfFile);
+    } finally {
+      if (existsSync(tmpHtml)) unlinkSync(tmpHtml);
+    }
 
     separator(label);
     console.log(chalk.white(letter));
-    console.log(chalk.dim(`\nSaved -> ${filename}`));
+    console.log(chalk.dim(`\nSaved -> ${txtFile}`));
+    console.log(chalk.dim(`Saved -> ${pdfFile}`));
   } catch (e) {
     console.log(chalk.red(` FAILED: ${(e as Error).message}`));
   }
