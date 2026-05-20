@@ -5,6 +5,7 @@ import { scoreJobs } from "./score";
 import { generateCoverLetter } from "./generate";
 import { loadProfile } from "./profile";
 import type { Job } from "./types";
+import pkg from "../package.json" with { type: "json" };
 
 const args = process.argv.slice(2);
 const cliQuery = args.find((a) => !a.startsWith("--"));
@@ -35,6 +36,7 @@ function separator(label: string) {
   console.log(chalk.cyan(line));
 }
 
+console.log(chalk.dim(`JobBot v${pkg.version}`) + "  " + chalk.dim("bun apply"));
 console.log(
   chalk.bold(`Scraping: ${ARGS.queries.map((q) => `"${q}"`).join(", ")}\n`),
 );

@@ -4,6 +4,7 @@ import { scrapeDuunitori, scrapeJobDetails } from "./scrape";
 import { scoreJobs } from "./score";
 import { loadProfile } from "./profile";
 import type { Job } from "./types";
+import pkg from "../package.json" with { type: "json" };
 
 const args = process.argv.slice(2);
 const cliQuery = args.find((a) => !a.startsWith("--"));
@@ -76,6 +77,7 @@ function saveJobs(jobs: Job[]) {
   console.log(chalk.yellow(`Saved ${jobs.length} jobs -> ${OUT_FILE}`));
 }
 
+console.log(chalk.dim(`JobBot v${pkg.version}`) + "  " + chalk.dim("bun scrape"));
 console.log(
   chalk.bold(
     `Scraping: ${ARGS.queries.map((q) => `"${q}"`).join(", ")}${ARGS.withDetails ? " (with details)" : ""}\n`,
