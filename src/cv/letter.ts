@@ -170,26 +170,6 @@ header::after {
 }
 .para-gap { height: 10px; }
 
-/* ── SIGNATURE ── */
-.signature {
-  flex-shrink: 0;
-  padding: 14px 40px 20px;
-  border-top: 1px solid ${C.surface0};
-}
-.sig-name {
-  font-family: 'Cinzel', serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: ${C.text};
-  letter-spacing: 0.8px;
-  text-shadow: 0 0 14px ${C.blue}44;
-  margin-bottom: 2px;
-}
-.sig-contact {
-  font-size: 8.5px;
-  color: ${C.subtext0};
-}
-
 /* ── FOOTER ── */
 .ltr-footer {
   flex-shrink: 0;
@@ -240,11 +220,6 @@ header::after {
 
 <div class="letter-body">
   ${bodyLines}
-</div>
-
-<div class="signature">
-  <div class="sig-name">${p.personal.name}</div>
-  <div class="sig-contact">${p.personal.email} &nbsp;·&nbsp; ${p.personal.phone}</div>
 </div>
 
 ${footerHtml}
