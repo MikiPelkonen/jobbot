@@ -43,7 +43,7 @@ body {
   background: ${C.base};
   color: ${C.text};
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.5;
   display: flex;
   flex-direction: column;
@@ -109,7 +109,7 @@ header::after {
   z-index: 4;
   padding: 24px;
   max-width: 65%;
-  background: rgba(24, 24, 37, 0.45);
+  background: rgba(24, 24, 37, 0.75);
 
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -449,18 +449,18 @@ h2.green    { color: ${C.green};    }
   background: ${C.crust};
   border-top: 1px solid ${C.surface0};
   font-family: 'Rajdhani', sans-serif;
-  font-size: 8.5px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 1px;
   color: ${C.subtext0};
   flex-shrink: 0;
 }
 .footer-icon { color: ${C.blue}; }
-.footer-sep  { color: ${C.surface2}; font-size: 6px; }
+.footer-sep  { color: ${C.surface2}; font-size: 7px; }
 .footer-link { color: ${C.blue}; text-decoration: none; letter-spacing: 0; font-weight: 500; }
 </style>
 </head>
-<body${photoUrl ? ` style="background-image: linear-gradient(to right, ${C.base} 0%, ${C.base}cc 18%, ${C.base}77 38%, ${C.base}22 55%, transparent 72%), linear-gradient(to top, ${C.base} 0%, ${C.base}ee 6%, ${C.base}55 15%, transparent 32%), url('${photoUrl}'); background-position: 0 0, 0 100%, top -50px right -125px; background-size: 100% 100%, 100% 100%, 75% auto; background-repeat: no-repeat, no-repeat, no-repeat;"` : ""}>
+<body${photoUrl ? ` style="background-image: linear-gradient(to right, ${C.base} 0%, ${C.base}cc 35%, ${C.base}77 55%, ${C.base}22 76%, transparent 80%), linear-gradient(to top, ${C.base} 0%, ${C.base}ee 6%, ${C.base}55 15%, transparent 82%), url('${photoUrl}'); background-position: 0 0, 0 100%, top -50px right -125px; background-size: 100% 100%, 100% 100%, 75% auto; background-repeat: no-repeat, no-repeat, no-repeat;"` : ""}>
 <header>
   <div class="hero-glow"></div>
   <div class="header-content">
