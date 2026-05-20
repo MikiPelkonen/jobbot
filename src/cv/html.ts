@@ -76,16 +76,16 @@ body::before {
 header {
   position: relative;
   min-height: 300px;
-  background: rgba(24, 24, 37, 0.25);
+  background-color: rgba(24, 24, 37, 0.25);
   backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(8px);
-  background-repeat: no-repeat, no-repeat;
-  background-position: 0 0, right 18px center;
-  background-size: auto, auto 86%;
+  -webkit-backdrop-filter: blur(4px);
   overflow: hidden;
   border-bottom: 2px solid ${C.blue};
   flex-shrink: 0;
   z-index: 0;
+  display: flex;
+  align-items: stretch;
+  padding: 20px;
 }
 header::after {
   content: '';
@@ -120,6 +120,10 @@ header::after {
     0 10px 24px rgba(0,0,0,0.25);
 
   border-radius: 8px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .header-content::before {
   content: '';
@@ -144,28 +148,30 @@ h1 em {
   text-shadow: 0 0 20px ${C.blue}88;
 }
 .role-badge {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
 
-  margin: 8px 0 10px;
-  padding: 6px 14px;
+  margin: 4px 0;
+  padding: 10px;
 
   background: ${C.blue};
   color: ${C.crust};
 
   font-family: 'Rajdhani', sans-serif;
-  font-size: 9.5px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 900;
 
-  letter-spacing: 2.2px;   /* THIS replaces manual spacing */
+  letter-spacing: 2px;
   text-transform: uppercase;
 
   clip-path: polygon(
-    0 0,
+    10px 0,
     calc(100% - 10px) 0,
     100% 50%,
     calc(100% - 10px) 100%,
-    0 100%
+    10px 100%,
+    0 50%
   );
 
   box-shadow: 0 6px 18px rgba(0,0,0,0.25);
@@ -204,18 +210,8 @@ h1 em {
 }
 .main {
   padding: 16px 18px 16px 20px;
-
-  background: rgba(24, 24, 37, 0.72);
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  border-right: 1px solid rgba(255,255,255,0.06);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.04),
-    0 10px 30px rgba(0,0,0,0.28);
-
+  background: ${C.base};
+  border-right: 1px solid ${C.surface0};
   overflow: hidden;
 }
 
@@ -228,6 +224,7 @@ h1 em {
   -webkit-backdrop-filter: blur(14px);
 
   border-left: 1px solid rgba(255,255,255,0.04);
+  border-top: 2px solid ${C.teal};
 
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.03);
@@ -262,12 +259,8 @@ h2.green    { color: ${C.green};    }
 
 /* ── EXPERIENCE ── */
 .exp-card {
-  background: rgba(49, 50, 68, 0.78);
-
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-
-  border: 1px solid rgba(255,255,255,0.05);
+  background: ${C.surface0};
+  border: 1px solid ${C.surface1};
   border-left: 3px solid ${C.blue};
 
   clip-path: polygon(
@@ -278,10 +271,7 @@ h2.green    { color: ${C.green};    }
     0 100%
   );
 
-  box-shadow:
-    0 10px 24px rgba(0,0,0,0.24),
-    inset 0 1px 0 rgba(255,255,255,0.03),
-    inset 3px 0 12px ${C.blue}22;
+  box-shadow: inset 3px 0 12px ${C.blue}33;
 
   padding: 10px 14px;
   margin-bottom: 10px;
@@ -299,6 +289,7 @@ h2.green    { color: ${C.green};    }
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: ${C.text};
+  text-shadow: 0 0 12px ${C.blue}66;
 }
 .exp-period {
   font-family: 'Rajdhani', sans-serif;
@@ -331,13 +322,38 @@ h2.green    { color: ${C.green};    }
   line-height: 1.45;
 }
 .exp-card li::marker { color: ${C.teal}; }
-.prev-entry {
+.prev-timeline {
+  position: relative;
+  padding-left: 18px;
   margin-bottom: 6px;
-  padding: 5px 0 5px 10px;
-  border-left: 2px solid ${C.surface1};
+}
+.prev-timeline::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: ${C.surface1};
+}
+.prev-entry {
+  position: relative;
+  margin-bottom: 5px;
+  padding: 3px 0;
   color: ${C.subtext0};
   font-size: 8.8px;
   line-height: 1.45;
+}
+.prev-entry::before {
+  content: '';
+  position: absolute;
+  left: -19px;
+  top: 8px;
+  width: 8px;
+  height: 8px;
+  background: ${C.teal};
+  border-radius: 50%;
+  box-shadow: 0 0 6px ${C.teal}aa;
 }
 .edu-entry {
   margin-bottom: 6px;
@@ -353,8 +369,11 @@ h2.green    { color: ${C.green};    }
 .strip {
   flex-shrink: 0;
   display: flex;
-  background: ${C.mantle};
+  background: rgba(17, 17, 27, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-top: 2px solid ${C.surface0};
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 .strip-col {
   flex: 1;
@@ -441,48 +460,12 @@ h2.green    { color: ${C.green};    }
 .footer-link { color: ${C.blue}; text-decoration: none; letter-spacing: 0; font-weight: 500; }
 </style>
 </head>
-<body
-  ${
-    photoUrl
-      ? `
-        style="
-        background-image:
-          /* LEFT FADE ONLY (soft edge into transparency) */
-          linear-gradient(
-            to right,
-            ${C.base} 0%,
-            ${C.base}cc 12%,
-            ${C.base}88 25%,
-            ${C.base}44 40%,
-            transparent 70%
-          ),
-
-          /* OPTIONAL subtle global tint (VERY light, remove if too dark) */
-          linear-gradient(
-            to bottom,
-            transparent 0%,
-            ${C.base}10 100%
-          ),
-
-          /* IMAGE */
-          url('${photoUrl}');
-
-          background-position: top -80px right -200px;
-          background-size: 90%;
-          background-attachment: fixed;
-          background-repeat: no-repeat;
-        "
-      `
-      : ""
-  }
->
+<body${photoUrl ? ` style="background-image: linear-gradient(to right, ${C.base} 0%, ${C.base}cc 18%, ${C.base}77 38%, ${C.base}22 55%, transparent 72%), linear-gradient(to top, ${C.base} 0%, ${C.base}ee 6%, ${C.base}55 15%, transparent 32%), url('${photoUrl}'); background-position: 0 0, 0 100%, top -50px right -125px; background-size: 100% 100%, 100% 100%, 75% auto; background-repeat: no-repeat, no-repeat, no-repeat;"` : ""}>
 <header>
   <div class="hero-glow"></div>
   <div class="header-content">
     <h1>${p.personal.name.split(" ").slice(0, -1).join(" ")} <em>${p.personal.name.split(" ").slice(-1)[0]}</em></h1>
-    <div class="role-badge">
-      TECHNICAL GENERALIST · IT SPECIALIST · GAME INDUSTRY
-    </div>
+    <div class="role-badge">GENERALIST · IT SPECIALIST · DEVELOPER · GAME INDUSTRY</div>
     <div class="contacts">
       <span><span class="ic">✉</span>${p.personal.email}</span>
       <span><span class="ic">☏</span>${p.personal.phone}</span>
@@ -509,7 +492,9 @@ h2.green    { color: ${C.green};    }
         <div class="exp-reason">${r.end_reason}</div>
         <ul>${r.duties.map((d) => `<li>${d}</li>`).join("")}</ul>
       </div>
-      ${prevExp.map((e) => `<div class="prev-entry"><span style="color:${C.teal};font-weight:700;font-family:'Rajdhani',sans-serif;letter-spacing:1px">▸</span> ${e.entry}</div>`).join("")}
+      <div class="prev-timeline">
+        ${prevExp.map((e) => `<div class="prev-entry">${e.entry}</div>`).join("")}
+      </div>
     </section>
 
     <section>
